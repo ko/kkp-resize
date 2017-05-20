@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func main() {
@@ -18,8 +19,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dir500 := filepath.Join(dir, "1200")
-	os.Mkdir(dir500, 0755)
+	size := os.Args[2]
+
+	// twelve hundred or five hundred
+	dirResize := filepath.Join(dir, size)
+	os.Mkdir(dirResize, 0755)
 
 	log.Println(len(matches))
 
@@ -35,10 +39,14 @@ func main() {
 		}
 		file.Close()
 
-		m := resize.Resize(1200, 0, img, resize.Lanczos3)
+		sizeInt, err := strconv.ParseUint(size, 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		m := resize.Resize(uint(sizeInt), 0, img, resize.Lanczos3)
 
 		basename := filepath.Base(value)
-		newpath := filepath.Join(dir500, basename)
+		newpath := filepath.Join(dirResize, basename)
 		out, err := os.Create(newpath)
 		if err != nil {
 			log.Fatal(err)
